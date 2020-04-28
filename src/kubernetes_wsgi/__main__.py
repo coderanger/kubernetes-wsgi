@@ -16,12 +16,11 @@ if TYPE_CHECKING:
 
 
 def load_application(app_str: str) -> "WSGIApplication":
-    func_name: Optional[str]
+    func_name = None # type: Optional[str]
     if ":" in app_str:
         mod_name, func_name = app_str.split(":", 1)
     else:
         mod_name = app_str
-        func_name = None
     mod = importlib.import_module(mod_name)
     if func_name is None:
         # Auto-detection behavior.
@@ -31,7 +30,7 @@ def load_application(app_str: str) -> "WSGIApplication":
         if application is None:
             raise ValueError(
                 "Unable to find WSGI application function automatically,"
-                f"please specify {mod_name}:mywsgifunc"
+                "please specify {}:mywsgifunc".format(mod_name)
             )
     else:
         application = getattr(mod, func_name)
