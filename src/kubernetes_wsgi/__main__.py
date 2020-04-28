@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 def load_application(app_str: str) -> "WSGIApplication":
-    func_name = None # type: Optional[str]
+    func_name = None  # type: Optional[str]
     if ":" in app_str:
         mod_name, func_name = app_str.split(":", 1)
     else:
