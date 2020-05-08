@@ -2,17 +2,57 @@
 Run your existing WSGI application using `python -m kubernetes_wsgi myapp`.
 """
 
+import argparse
 import importlib
 import sys
 
 # This is a fake import, only used during type checking.
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, Text
 
 from .server import serve
 
 
 if TYPE_CHECKING:
     from wsgiref.types import WSGIApplication
+
+
+def parse_args(argv: Sequence[Text]) -> Dict[str, Any]:
+    parser = argparse.ArgumentParser(
+        prog="kubernetes_wsgi",
+        description="Start a kubernetes-wsgi web server",
+    )
+    parser.add_argument(
+        "application",
+        metavar="MODULE:APP",
+        help="the WSGI application to run in a dotted import form "
+        "(eg. myapp or myapp.wsgi) with an optional :function_name if needed",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="port to run the web application on",
+    )
+    parser.add_argument(
+        "--metrics-port",
+        metavar="PORT",
+        type=int,
+        default=9000,
+        help="port to run the Prometheus metrics on",
+    )
+    parser.add_argument(
+        "--health-check-path",
+        metavar="PATH",
+        default="/healthz",
+        help="URL path to the health check endpoint",
+    )
+    args = parser.parse_args(argv)
+    return {
+        "application": args.application,
+        "port": args.port,
+        "metrics_port": args.metrics_port,
+        "health_check_path": args.health_check_path,
+    }
 
 
 def load_application(app_str: str) -> "WSGIApplication":
@@ -38,14 +78,9 @@ def load_application(app_str: str) -> "WSGIApplication":
 
 
 def main():
-    app, port = (sys.argv[1:] + ([None] * 2))[:2]
-    if app is None:
-        app = "wsgi"
-    if port is None:
-        port = 8000
-    app = load_application(app)
-    port = int(port)
-    serve(app, port=port)
+    args = parse_args(sys.argv[1:])
+    args["application"] = load_application(args["application"])
+    serve(**args)
 
 
 if __name__ == "__main__":

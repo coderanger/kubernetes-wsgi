@@ -58,7 +58,7 @@ def test_app1_fail(launch_server):
 
 
 def test_app1_port(launch_server):
-    p = launch_server("app1.wsgi", "8080")
+    p = launch_server("app1.wsgi", "--port", "8080")
     assert p.poll() is None
     r = requests.get("http://localhost:8080/")
     assert r.text == "Hello world\n"
