@@ -15,7 +15,7 @@ pip install kubernetes-wsgi
 To launch your application:
 
 ```
-python -m kubernetes_wsgi myapp 8000
+python -m kubernetes_wsgi myapp --port 8000
 ```
 
 where `myapp` is an importable module name containing your WSGI application function.
