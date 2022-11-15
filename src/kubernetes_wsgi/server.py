@@ -58,7 +58,9 @@ def serve(
     # Start logging.
     logging.basicConfig(level=logging.INFO)
     observers = [STDLibLogObserver()]
-    logger.globalLogBeginner.beginLoggingTo(observers)
+    logger.globalLogBeginner.beginLoggingTo(
+        observers, redirectStandardIO=False
+    )
 
     # Create the server.
     pool = threadpool.ThreadPool()
