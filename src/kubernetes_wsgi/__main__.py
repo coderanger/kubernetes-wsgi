@@ -46,12 +46,28 @@ def parse_args(argv: Sequence[Text]) -> Dict[str, Any]:
         default="/healthz",
         help="URL path to the health check endpoint",
     )
+    parser.add_argument(
+        "--min-threads",
+        metavar="N",
+        type=int,
+        default=5,
+        help="Minimum number of threads to run",
+    )
+    parser.add_argument(
+        "--max-threads",
+        metavar="N",
+        type=int,
+        default=20,
+        help="Maximum number of threads to run",
+    )
     args = parser.parse_args(argv)
     return {
         "application": args.application,
         "port": args.port,
         "metrics_port": args.metrics_port,
         "health_check_path": args.health_check_path,
+        "min_threads": args.min_threads,
+        "max_threads": args.max_threads,
     }
 
 

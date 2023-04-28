@@ -51,6 +51,8 @@ def serve(
     metrics_port: int = 9000,
     access_log_formatter: LogFormatter = proxiedLogFormatter,
     health_check_path: str = "/healthz",
+    min_threads: int = 5,
+    max_threads: int = 20,
 ):
     # Quiet the Twisted factory logging.
     Factory.noisy = False
@@ -63,7 +65,9 @@ def serve(
     )
 
     # Create the server.
-    pool = threadpool.ThreadPool()
+    pool = threadpool.ThreadPool(
+        minthreads=min_threads, maxthreads=max_threads
+    )
     reactor.callWhenRunning(pool.start)
     _listen_wsgi(
         reactor,
